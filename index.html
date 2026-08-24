@@ -2,7 +2,6 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Générateur de guide de téléchargement</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📥</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -291,12 +290,11 @@
     padding: 12px 14px;
     border-radius: 10px;
     border: 1.5px solid #d9cffb;
-    font-size: 16px;
+    font-size: 13px;
     font-family: 'Courier New', monospace;
     color: var(--ink);
     outline: none;
     transition: border-color 0.15s;
-    box-sizing: border-box;
   }
   .field input:focus {
     border-color: var(--purple);
@@ -335,15 +333,22 @@
   }
 
   #preview-wrap {
+    width: min(900px, calc(100vw - 32px));
     max-width: 900px;
     margin: 0 auto;
     max-height: 70vh;
     overflow-y: auto;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
     border-radius: 14px;
     box-shadow: 0 10px 40px rgba(31,36,48,0.15);
     background: white;
+    position: relative;
+  }
+
+  /* Sur mobile, l'aperçu reste au format 900 px pour le PDF,
+     mais il est visuellement réduit pour tenir dans l'écran. */
+  #pdf-root {
+    transform-origin: top left;
   }
   .preview-label {
     max-width: 900px;
@@ -354,6 +359,29 @@
     color: #8a90a3;
     font-weight: 700;
     text-align: center;
+  }
+  @media (max-width: 600px) {
+    .tool {
+      width: calc(100% - 24px);
+      padding: 22px 18px;
+      margin-bottom: 24px;
+    }
+
+    .tpl-gallery {
+      width: calc(100% - 24px);
+      margin-bottom: 20px;
+    }
+
+    .preview-label {
+      width: calc(100% - 24px);
+      line-height: 1.4;
+    }
+
+    #preview-wrap {
+      width: calc(100% - 24px);
+      max-height: 70vh;
+      border-radius: 10px;
+    }
   }
   #pdf-root {
     width: 900px;
@@ -705,7 +733,24 @@ function updatePreview() {
   const shown = link || 'https://drive.google.com/file/d/...';
   document.getElementById('pdf-dl-btn').setAttribute('href', link || '#');
   document.getElementById('pdf-fallback').textContent = 'Le bouton ne fonctionne pas ? Copiez ce lien : ' + shown;
+  resizePreview();
 }
+
+/* Rend l'aperçu responsive sans modifier le format 900 px du PDF. */
+function resizePreview() {
+  const wrap = document.getElementById('preview-wrap');
+  const root = document.getElementById('pdf-root');
+  if (!wrap || !root) return;
+
+  const baseWidth = 900;
+  const availableWidth = Math.max(1, wrap.clientWidth);
+  const scale = Math.min(1, availableWidth / baseWidth);
+
+  root.style.transform = `scale(${scale})`;
+  wrap.style.height = `${Math.ceil(root.scrollHeight * scale)}px`;
+}
+
+window.addEventListener('resize', resizePreview);
 
 async function generatePdf() {
   const input = document.getElementById('drive-link');
@@ -730,6 +775,11 @@ async function generatePdf() {
   await new Promise(resolve => setTimeout(resolve, 50));
 
   const element = document.getElementById('pdf-root');
+  const previewScale = element.style.transform;
+
+  /* Le PDF reste toujours à 900 px, même sur téléphone. */
+  element.style.transform = 'none';
+
   const opt = {
     margin: 0,
     filename: buildFilename(),
@@ -752,6 +802,8 @@ async function generatePdf() {
     status.textContent = 'Une erreur est survenue, réessayez.';
     console.error(err);
   } finally {
+    element.style.transform = previewScale;
+    resizePreview();
     btn.disabled = false;
   }
 }
