@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Générateur de guide de téléchargement</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📥</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -290,11 +291,12 @@
     padding: 12px 14px;
     border-radius: 10px;
     border: 1.5px solid #d9cffb;
-    font-size: 13px;
+    font-size: 16px;
     font-family: 'Courier New', monospace;
     color: var(--ink);
     outline: none;
     transition: border-color 0.15s;
+    box-sizing: border-box;
   }
   .field input:focus {
     border-color: var(--purple);
@@ -337,6 +339,8 @@
     margin: 0 auto;
     max-height: 70vh;
     overflow-y: auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     border-radius: 14px;
     box-shadow: 0 10px 40px rgba(31,36,48,0.15);
     background: white;
