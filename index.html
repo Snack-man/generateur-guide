@@ -992,9 +992,25 @@ async function generatePdf() {
   await new Promise(resolve => setTimeout(resolve, 50));
 
   const element = document.getElementById('pdf-root');
-  // Ensure capture isn't affected by the mobile preview's scale-to-fit transform
+  const sizer = document.getElementById('preview-sizer');
+  const wrap = document.getElementById('preview-wrap');
+  // Ensure capture isn't affected by the mobile preview's scale-to-fit:
+  // #pdf-root's own transform, AND the ancestor #preview-sizer/#preview-wrap
+  // which are deliberately sized/clipped (overflow:hidden / max-height) to
+  // fit the small on-screen preview. Left in place, that clipping would
+  // crop the capture down to almost nothing (a blank PDF).
   const previousTransform = element.style.transform;
+  const previousSizerWidth = sizer.style.width;
+  const previousSizerHeight = sizer.style.height;
+  const previousSizerOverflow = sizer.style.overflow;
+  const previousWrapMaxHeight = wrap.style.maxHeight;
+  const previousWrapOverflow = wrap.style.overflowY;
   element.style.transform = 'none';
+  sizer.style.width = '900px';
+  sizer.style.height = 'auto';
+  sizer.style.overflow = 'visible';
+  wrap.style.maxHeight = 'none';
+  wrap.style.overflowY = 'visible';
 
   const opt = {
     margin: 0,
@@ -1020,6 +1036,11 @@ async function generatePdf() {
   } finally {
     btn.disabled = false;
     element.style.transform = previousTransform;
+    sizer.style.width = previousSizerWidth;
+    sizer.style.height = previousSizerHeight;
+    sizer.style.overflow = previousSizerOverflow;
+    wrap.style.maxHeight = previousWrapMaxHeight;
+    wrap.style.overflowY = previousWrapOverflow;
     scalePreviewToFit();
   }
 }
