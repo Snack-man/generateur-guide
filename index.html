@@ -355,12 +355,20 @@
     font-weight: 700;
     text-align: center;
   }
+  #preview-sizer {
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto;
+  }
   #pdf-root {
     width: 900px;
     background: var(--t-page-bg);
     font-family: var(--t-font-body);
     color: var(--t-ink);
     transform-origin: top left;
+    position: absolute;
+    top: 0;
+    left: 0;
   }
   .header {
     background: var(--t-header-bg);
@@ -530,6 +538,7 @@
   <!-- Live preview, also used as the source for PDF export -->
   <div class="preview-label">Aperçu — sera généré avec le lien ci-dessus</div>
   <div id="preview-wrap">
+  <div id="preview-sizer">
   <div id="pdf-root" class="tpl-violet">
     <div class="header">
       <div class="brand">FORMATIONS</div>
@@ -615,6 +624,7 @@
     <div class="footer">
       <div class="fnote">Besoin d'aide ? Contactez-nous via Telegram.</div>
     </div>
+  </div>
   </div>
   </div>
 
@@ -733,12 +743,9 @@ async function generatePdf() {
   await new Promise(resolve => setTimeout(resolve, 50));
 
   const element = document.getElementById('pdf-root');
-  // Ensure capture isn't affected by the mobile preview's scale-to-fit
-  // (which may use either `transform` or `zoom` depending on browser support)
+  // Ensure capture isn't affected by the mobile preview's scale-to-fit transform
   const previousTransform = element.style.transform;
-  const previousZoom = element.style.zoom;
   element.style.transform = 'none';
-  element.style.zoom = '';
 
   const opt = {
     margin: 0,
@@ -764,7 +771,6 @@ async function generatePdf() {
   } finally {
     btn.disabled = false;
     element.style.transform = previousTransform;
-    element.style.zoom = previousZoom;
     scalePreviewToFit();
   }
 }
@@ -775,45 +781,34 @@ document.getElementById('drive-link').addEventListener('keydown', function(e) {
 });
 
 /* ---- Responsive scaling of the fixed-900px preview ---- */
-// Safari/WebKit has a known bug where, if the scaled child uses
-// `transform: scale()`, the scrollable area of an `overflow:auto`
-// ancestor is sometimes computed from the *pre-transform* box size
-// instead of the visually shrunk one — so scrolling to the end of the
-// preview reveals a big chunk of empty space below the real content.
-// `zoom` avoids this entirely because (unlike `transform`) it changes
-// the element's actual box size in layout, so the scrollable area the
-// browser computes always matches what's visually on screen.
-const SUPPORTS_ZOOM = (() => {
-  try { return CSS.supports('zoom', '1'); } catch (e) { return false; }
-})();
-
+// #pdf-root is scaled down with `transform: scale()` to fit small
+// screens. A plain `overflow:auto` ancestor around a transform-scaled
+// element is unreliable on WebKit/Safari (scroll height sometimes
+// doesn't match what's visually shown, and rapidly re-applying `zoom`
+// as an alternative caused a repaint/ghosting glitch on iOS). The fix:
+// #pdf-root sits inside #preview-sizer, a plain block element whose
+// *real*, untransformed width/height we set explicitly (in px) to
+// match the scaled size. Since #preview-sizer itself is never
+// transformed, #preview-wrap's scrollable area is computed from a
+// perfectly normal box — no ambiguity, no leftover blank space, no
+// ghosting.
 function scalePreviewToFit() {
   const wrap = document.getElementById('preview-wrap');
+  const sizer = document.getElementById('preview-sizer');
   const root = document.getElementById('pdf-root');
-  if (!wrap || !root) return;
+  if (!wrap || !sizer || !root) return;
 
-  // Available width is the wrap's own rendered width before scaling
-  // (temporarily clear any scaling to measure the true container width)
+  // Measure at natural (unscaled) size first
   root.style.transform = 'none';
-  root.style.zoom = '';
   const availableWidth = wrap.clientWidth;
   const naturalWidth = 900;
+  const naturalHeight = root.offsetHeight;
   const scale = Math.min(1, availableWidth / naturalWidth);
 
-  if (SUPPORTS_ZOOM) {
-    // `zoom` resizes the actual layout box, so the wrap's overflow/
-    // scrollHeight is correct automatically — no manual height math,
-    // no leftover blank space.
-    root.style.zoom = scale < 1 ? String(scale) : '';
-    wrap.style.height = '';
-  } else {
-    // Fallback for browsers without `zoom` support (e.g. older Firefox):
-    // transform doesn't affect layout flow, so explicitly size the
-    // wrapper to the scaled height ourselves.
-    root.style.transform = scale < 1 ? `scale(${scale})` : 'none';
-    const naturalHeight = root.offsetHeight;
-    wrap.style.height = (naturalHeight * scale) + 'px';
-  }
+  root.style.transform = scale < 1 ? `scale(${scale})` : 'none';
+
+  sizer.style.width = (naturalWidth * scale) + 'px';
+  sizer.style.height = (naturalHeight * scale) + 'px';
 }
 
 window.addEventListener('resize', scalePreviewToFit);
