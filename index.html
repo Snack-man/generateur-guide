@@ -794,6 +794,18 @@ function scalePreviewToFit() {
 
 window.addEventListener('resize', scalePreviewToFit);
 window.addEventListener('orientationchange', scalePreviewToFit);
+window.addEventListener('load', scalePreviewToFit);
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(scalePreviewToFit);
+}
+
+// Keep the wrapper height in sync with the actual content height at all
+// times (fonts finishing their swap, images loading, template switches,
+// text changes, etc.) so no stale blank space is ever left below the
+// preview once the user has scrolled it to the end.
+const previewResizeObserver = new ResizeObserver(() => scalePreviewToFit());
+const pdfRootEl = document.getElementById('pdf-root');
+if (pdfRootEl) previewResizeObserver.observe(pdfRootEl);
 
 renderTemplateGallery();
 updatePreview();
