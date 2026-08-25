@@ -205,6 +205,197 @@
     --t-footer-brand: #ea580c;
   }
 
+  /* ---- 6. Mono Minimaliste ---- */
+  #pdf-root.tpl-mono {
+    --t-font-heading: 'Space Grotesk', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --t-font-body: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --t-header-bg: #ffffff;
+    --t-header-pattern: none;
+    --t-header-text: #14171f;
+    --t-brand-color: #14171f;
+    --t-badge-bg: transparent;
+    --t-badge-border: #14171f;
+    --t-accent: #14171f;
+    --t-accent2: #14171f;
+    --t-thanks-shadow: transparent;
+    --t-check-bg: #14171f;
+    --t-section-title: #14171f;
+    --t-step-bg: transparent;
+    --t-step-border: transparent;
+    --t-step-color: #14171f;
+    --t-step-radius: 0px;
+    --t-step-line: #dcdcdc;
+    --t-screenshot-bg: #14171f;
+    --t-btn-primary-bg: #14171f;
+    --t-btn-secondary-bg: #3a3a3a;
+    --t-reco-bg: #f4f4f4;
+    --t-reco-border: #14171f;
+    --t-reco-text: #3a3a3a;
+    --t-reco-text-strong: #14171f;
+    --t-card-bg: #14171f;
+    --t-card-label: #cfcfcf;
+    --t-card-btn-bg: #ffffff;
+    --t-card-btn-shadow: transparent;
+    --t-card-fallback: #8a8a8a;
+    --t-footer-border: #14171f;
+    --t-footer-brand: #14171f;
+    --t-footer-note: #6b6b6b;
+  }
+  /* Disposition différente : en-tête sans bandeau coloré et aligné à gauche,
+     badge en simple pastille de texte sous le titre (plus de coin flottant),
+     numéros d'étape en grands chiffres nus (sans fond ni cercle), encart
+     "merci" transformé en bande sobre bordée au lieu d'une carte flottante. */
+  #pdf-root.tpl-mono .header {
+    border-bottom: 2px solid #14171f;
+    padding: 36px 60px 24px 60px;
+  }
+  #pdf-root.tpl-mono .header .badge {
+    position: static;
+    display: inline-block;
+    background: none;
+    border: 1px solid #14171f;
+    border-radius: 0;
+    margin-top: 14px;
+    color: #14171f;
+    padding: 6px 14px;
+  }
+  #pdf-root.tpl-mono .header h1 { font-size: 30px; letter-spacing: -0.5px; }
+  #pdf-root.tpl-mono .thanks {
+    margin: 24px 60px 0 60px;
+    border-radius: 0;
+    box-shadow: none;
+    border-top: 1px solid #e2e2e2;
+    border-bottom: 1px solid #e2e2e2;
+    padding: 20px 4px;
+  }
+  #pdf-root.tpl-mono .thanks .check {
+    border-radius: 0;
+    background: none;
+    color: #14171f;
+    font-size: 26px;
+  }
+  #pdf-root.tpl-mono .step-num {
+    font-family: var(--t-font-heading);
+    font-size: 26px;
+    justify-content: flex-start;
+    min-width: 32px;
+  }
+  #pdf-root.tpl-mono .screenshot { border-radius: 0; border: 1px solid #444; }
+  #pdf-root.tpl-mono .link-card { border-radius: 0; text-align: left; padding: 28px 32px; }
+  #pdf-root.tpl-mono .link-card .dl-btn { border-radius: 0; }
+  #pdf-root.tpl-mono .footer { justify-content: center; border-top: 2px solid #14171f; }
+
+  /* ---- 7. Nuit Néon ---- */
+  #pdf-root.tpl-night {
+    --t-font-heading: 'Playfair Display', Georgia, serif;
+    --t-font-body: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --t-header-bg: linear-gradient(160deg, #05060a 0%, #10131c 100%);
+    --t-header-pattern: radial-gradient(circle at 15% 0%, rgba(94,234,212,0.18) 0%, transparent 55%);
+    --t-header-text: #eef2f7;
+    --t-brand-color: #5eead4;
+    --t-badge-bg: rgba(94,234,212,0.08);
+    --t-badge-border: rgba(94,234,212,0.5);
+    --t-page-bg: #0b0d13;
+    --t-ink: #eef2f7;
+    --t-muted: #98a2b3;
+    --t-accent: #5eead4;
+    --t-accent2: #22d3ee;
+    --t-thanks-shadow: rgba(0,0,0,0.5);
+    --t-check-bg: #5eead4;
+    --t-section-title: #5eead4;
+    --t-step-bg: #10131c;
+    --t-step-border: rgba(94,234,212,0.35);
+    --t-step-color: #5eead4;
+    --t-step-radius: 50%;
+    --t-step-line: rgba(94,234,212,0.25);
+    --t-screenshot-bg: #05060a;
+    --t-btn-primary-bg: #5eead4;
+    --t-btn-secondary-bg: #1c2230;
+    --t-reco-bg: #10131c;
+    --t-reco-border: rgba(94,234,212,0.3);
+    --t-reco-text: #cbd5e1;
+    --t-reco-text-strong: #eef2f7;
+    --t-card-bg: linear-gradient(135deg, #0b0d13 0%, #16324a 100%);
+    --t-card-label: #5eead4;
+    --t-card-btn-bg: linear-gradient(135deg, #5eead4 0%, #22d3ee 100%);
+    --t-card-btn-shadow: rgba(94,234,212,0.45);
+    --t-card-fallback: #6b7789;
+    --t-footer-border: rgba(94,234,212,0.2);
+    --t-footer-brand: #5eead4;
+    --t-footer-note: #6b7789;
+  }
+  /* Disposition différente : toute la page passe en fond sombre (pas
+     seulement l'en-tête), l'encart "merci" flotte avec un liseré lumineux,
+     et les numéros d'étape deviennent des cercles à halo néon. */
+  #pdf-root.tpl-night .thanks {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(94,234,212,0.15);
+  }
+  #pdf-root.tpl-night .step-num { box-shadow: 0 0 12px rgba(94,234,212,0.35); }
+  #pdf-root.tpl-night .screenshot { border: 1px solid rgba(94,234,212,0.25); }
+  #pdf-root.tpl-night .link-card { box-shadow: 0 0 40px rgba(94,234,212,0.15); }
+
+  /* ---- 8. Billet Rose ---- */
+  #pdf-root.tpl-ticket {
+    --t-font-heading: 'Baloo 2', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --t-font-body: 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --t-header-bg: linear-gradient(135deg, #db2777 0%, #f472b6 100%);
+    --t-header-pattern: radial-gradient(circle at 50% 120%, rgba(255,255,255,0.25) 0%, transparent 50%);
+    --t-header-text: #ffffff;
+    --t-brand-color: rgba(255,255,255,0.85);
+    --t-badge-bg: #ffffff;
+    --t-badge-border: #ffffff;
+    --t-page-bg: #fff7fb;
+    --t-accent: #db2777;
+    --t-accent2: #f472b6;
+    --t-thanks-shadow: rgba(219,39,119,0.18);
+    --t-check-bg: #db2777;
+    --t-section-title: #db2777;
+    --t-step-bg: #ffe4f1;
+    --t-step-border: #f9a8d4;
+    --t-step-color: #db2777;
+    --t-step-radius: 10px;
+    --t-step-line: #fbcfe8;
+    --t-screenshot-bg: #2b1420;
+    --t-btn-primary-bg: #db2777;
+    --t-btn-secondary-bg: #4a2b3a;
+    --t-reco-bg: #ffe4f1;
+    --t-reco-border: #f9a8d4;
+    --t-reco-text: #831843;
+    --t-reco-text-strong: #500724;
+    --t-card-bg: linear-gradient(135deg, #831843 0%, #db2777 100%);
+    --t-card-label: #fbcfe8;
+    --t-card-btn-bg: #ffffff;
+    --t-card-btn-shadow: rgba(219,39,119,0.35);
+    --t-card-fallback: #d199b7;
+    --t-footer-brand: #db2777;
+  }
+  /* Disposition différente : en-tête centré façon billet avec le badge en
+     pastille sous le titre (au lieu du coin flottant), encart "merci"
+     empilé verticalement dans un cadre en pointillés, bouton et coins très
+     arrondis, pied de page centré sur deux lignes. */
+  #pdf-root.tpl-ticket .header { text-align: center; padding: 40px 60px 46px 60px; }
+  #pdf-root.tpl-ticket .header .badge {
+    position: static;
+    display: inline-block;
+    margin-top: 16px;
+    color: #db2777;
+    font-weight: 800;
+    border-radius: 999px;
+  }
+  #pdf-root.tpl-ticket .header h1,
+  #pdf-root.tpl-ticket .header p.subtitle { max-width: none; }
+  #pdf-root.tpl-ticket .thanks {
+    flex-direction: column;
+    text-align: center;
+    border: 2px dashed #f9a8d4;
+    box-shadow: none;
+    border-radius: 20px;
+  }
+  #pdf-root.tpl-ticket .section-title { text-align: center; }
+  #pdf-root.tpl-ticket .link-card { border-radius: 28px; }
+  #pdf-root.tpl-ticket .link-card .dl-btn { border-radius: 999px; color: #db2777 !important; }
+  #pdf-root.tpl-ticket .footer { flex-direction: column; gap: 6px; text-align: center; }
+
   /* ---- GALERIE DE TEMPLATES ---- */
   .tpl-gallery {
     max-width: 900px;
@@ -673,6 +864,23 @@ const TEMPLATES = [
     desc: 'Convivial, énergique, accueillant.',
     swatch: 'linear-gradient(135deg, #f97316 0%, #fbbf24 100%)',
     accent: '#ea580c',
+    font: "'Baloo 2', sans-serif"
+  },
+
+  {
+    id: 'tpl-night',
+    name: 'Nuit Néon',
+    desc: 'Page entière sombre, accents turquoise lumineux.',
+    swatch: 'linear-gradient(135deg, #05060a 0%, #16324a 100%)',
+    accent: '#5eead4',
+    font: "'Playfair Display', serif"
+  },
+  {
+    id: 'tpl-ticket',
+    name: 'Billet Rose',
+    desc: 'Mise en page centrée façon coupon, bords arrondis et pointillés.',
+    swatch: 'linear-gradient(135deg, #db2777 0%, #f472b6 100%)',
+    accent: '#db2777',
     font: "'Baloo 2', sans-serif"
   }
 ];
