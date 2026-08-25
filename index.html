@@ -733,9 +733,12 @@ async function generatePdf() {
   await new Promise(resolve => setTimeout(resolve, 50));
 
   const element = document.getElementById('pdf-root');
-  // Ensure capture isn't affected by the mobile preview's scale-to-fit transform
+  // Ensure capture isn't affected by the mobile preview's scale-to-fit
+  // (which may use either `transform` or `zoom` depending on browser support)
   const previousTransform = element.style.transform;
+  const previousZoom = element.style.zoom;
   element.style.transform = 'none';
+  element.style.zoom = '';
 
   const opt = {
     margin: 0,
@@ -761,6 +764,7 @@ async function generatePdf() {
   } finally {
     btn.disabled = false;
     element.style.transform = previousTransform;
+    element.style.zoom = previousZoom;
     scalePreviewToFit();
   }
 }
@@ -771,25 +775,45 @@ document.getElementById('drive-link').addEventListener('keydown', function(e) {
 });
 
 /* ---- Responsive scaling of the fixed-900px preview ---- */
+// Safari/WebKit has a known bug where, if the scaled child uses
+// `transform: scale()`, the scrollable area of an `overflow:auto`
+// ancestor is sometimes computed from the *pre-transform* box size
+// instead of the visually shrunk one — so scrolling to the end of the
+// preview reveals a big chunk of empty space below the real content.
+// `zoom` avoids this entirely because (unlike `transform`) it changes
+// the element's actual box size in layout, so the scrollable area the
+// browser computes always matches what's visually on screen.
+const SUPPORTS_ZOOM = (() => {
+  try { return CSS.supports('zoom', '1'); } catch (e) { return false; }
+})();
+
 function scalePreviewToFit() {
   const wrap = document.getElementById('preview-wrap');
   const root = document.getElementById('pdf-root');
   if (!wrap || !root) return;
 
   // Available width is the wrap's own rendered width before scaling
-  // (temporarily clear transform to measure true container width)
+  // (temporarily clear any scaling to measure the true container width)
   root.style.transform = 'none';
+  root.style.zoom = '';
   const availableWidth = wrap.clientWidth;
   const naturalWidth = 900;
   const scale = Math.min(1, availableWidth / naturalWidth);
 
-  root.style.transform = scale < 1 ? `scale(${scale})` : 'none';
-
-  // Since transform doesn't affect layout flow, explicitly size the
-  // wrapper to the scaled height so there's no leftover blank space
-  // and no need for horizontal scrolling.
-  const naturalHeight = root.offsetHeight;
-  wrap.style.height = (naturalHeight * scale) + 'px';
+  if (SUPPORTS_ZOOM) {
+    // `zoom` resizes the actual layout box, so the wrap's overflow/
+    // scrollHeight is correct automatically — no manual height math,
+    // no leftover blank space.
+    root.style.zoom = scale < 1 ? String(scale) : '';
+    wrap.style.height = '';
+  } else {
+    // Fallback for browsers without `zoom` support (e.g. older Firefox):
+    // transform doesn't affect layout flow, so explicitly size the
+    // wrapper to the scaled height ourselves.
+    root.style.transform = scale < 1 ? `scale(${scale})` : 'none';
+    const naturalHeight = root.offsetHeight;
+    wrap.style.height = (naturalHeight * scale) + 'px';
+  }
 }
 
 window.addEventListener('resize', scalePreviewToFit);
