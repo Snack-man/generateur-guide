@@ -339,7 +339,7 @@
     margin: 0 auto;
     max-height: 70vh;
     overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     border-radius: 14px;
     box-shadow: 0 10px 40px rgba(31,36,48,0.15);
@@ -360,6 +360,7 @@
     background: var(--t-page-bg);
     font-family: var(--t-font-body);
     color: var(--t-ink);
+    transform-origin: top left;
   }
   .header {
     background: var(--t-header-bg);
@@ -685,6 +686,7 @@ function selectTemplate(id) {
   TEMPLATES.forEach(t => pdfRoot.classList.remove(t.id));
   pdfRoot.classList.add(id);
   renderTemplateGallery();
+  scalePreviewToFit();
 }
 
 function templateSlug() {
@@ -705,6 +707,7 @@ function updatePreview() {
   const shown = link || 'https://drive.google.com/file/d/...';
   document.getElementById('pdf-dl-btn').setAttribute('href', link || '#');
   document.getElementById('pdf-fallback').textContent = 'Le bouton ne fonctionne pas ? Copiez ce lien : ' + shown;
+  scalePreviewToFit();
 }
 
 async function generatePdf() {
@@ -730,6 +733,10 @@ async function generatePdf() {
   await new Promise(resolve => setTimeout(resolve, 50));
 
   const element = document.getElementById('pdf-root');
+  // Ensure capture isn't affected by the mobile preview's scale-to-fit transform
+  const previousTransform = element.style.transform;
+  element.style.transform = 'none';
+
   const opt = {
     margin: 0,
     filename: buildFilename(),
@@ -753,6 +760,8 @@ async function generatePdf() {
     console.error(err);
   } finally {
     btn.disabled = false;
+    element.style.transform = previousTransform;
+    scalePreviewToFit();
   }
 }
 
@@ -760,8 +769,35 @@ document.getElementById('drive-link').addEventListener('input', updatePreview);
 document.getElementById('drive-link').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') generatePdf();
 });
+
+/* ---- Responsive scaling of the fixed-900px preview ---- */
+function scalePreviewToFit() {
+  const wrap = document.getElementById('preview-wrap');
+  const root = document.getElementById('pdf-root');
+  if (!wrap || !root) return;
+
+  // Available width is the wrap's own rendered width before scaling
+  // (temporarily clear transform to measure true container width)
+  root.style.transform = 'none';
+  const availableWidth = wrap.clientWidth;
+  const naturalWidth = 900;
+  const scale = Math.min(1, availableWidth / naturalWidth);
+
+  root.style.transform = scale < 1 ? `scale(${scale})` : 'none';
+
+  // Since transform doesn't affect layout flow, explicitly size the
+  // wrapper to the scaled height so there's no leftover blank space
+  // and no need for horizontal scrolling.
+  const naturalHeight = root.offsetHeight;
+  wrap.style.height = (naturalHeight * scale) + 'px';
+}
+
+window.addEventListener('resize', scalePreviewToFit);
+window.addEventListener('orientationchange', scalePreviewToFit);
+
 renderTemplateGallery();
 updatePreview();
+scalePreviewToFit();
 </script>
 
 </body>
