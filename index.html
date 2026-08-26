@@ -340,7 +340,15 @@
     text-align: left;
   }
   .tpl-card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(31,36,48,0.10); }
-  .tpl-card.active { border-color: var(--tc-accent, #5b3df5); box-shadow: 0 8px 22px rgba(31,36,48,0.14); }
+  /* Cadre plus épais + léger fond teinté pour que le template actif se
+     distingue nettement des autres vignettes, même quand plusieurs
+     modèles partagent des couleurs proches. */
+  .tpl-card.active {
+    border-width: 3px;
+    border-color: var(--tc-accent, #5b3df5);
+    background: color-mix(in srgb, var(--tc-accent, #5b3df5) 5%, white);
+    box-shadow: 0 8px 22px rgba(31,36,48,0.18);
+  }
   .tpl-card .tpl-swatch {
     height: 54px; border-radius: 9px; margin-bottom: 10px;
     display: flex; align-items: center; justify-content: center;
@@ -393,6 +401,175 @@
     margin: 0 0 22px 0;
     line-height: 1.5;
   }
+  /* ---- Progression multi-étapes ---- */
+  .progress-steps {
+    max-width: 560px;
+    margin: 0 auto 22px auto;
+    display: flex;
+    align-items: center;
+  }
+  .progress-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+  .progress-step .dot {
+    width: 26px; height: 26px; min-width: 26px; border-radius: 50%;
+    background: #ece9fb; color: #8a90a3;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+    transition: background 0.15s, color 0.15s;
+  }
+  .progress-step.done .dot { background: var(--purple); color: white; }
+  .progress-step .label {
+    font-size: 11.5px; font-weight: 700; color: #8a90a3; white-space: nowrap;
+  }
+  .progress-step.done .label { color: var(--ink); }
+  .progress-line {
+    flex: 1; height: 2px; background: #ece9fb; margin: 0 6px;
+  }
+  .progress-line.done { background: var(--purple); }
+
+  /* ---- Validation en temps réel des champs contact ---- */
+  .field-with-status { position: relative; }
+  .field-status-icon {
+    position: absolute;
+    right: 12px;
+    top: 38px;
+    font-size: 15px;
+    display: none;
+    line-height: 1;
+  }
+  .field-status-icon.ok { display: block; color: #22c55e; }
+  .field-status-icon.bad { display: block; color: #c0392b; }
+
+  /* ---- Lien de secours copiable ---- */
+  .fallback-copy-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .fallback-copy-row .fallback-text {
+    flex: 1;
+    word-break: break-all;
+    line-height: 1.4;
+  }
+  .copy-link-btn {
+    flex-shrink: 0;
+    background: #f2effe;
+    border: 1.5px solid #d9cffb;
+    color: var(--purple);
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .copy-link-btn:hover { background: #e6e1fb; }
+  .copy-link-btn.copied { background: #dcfce7; border-color: #86efac; color: #15803d; }
+
+  /* ---- Bouton plein écran / zoom de l'aperçu ---- */
+  .preview-toolbar {
+    max-width: 900px;
+    margin: 0 auto 10px auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .zoom-btn {
+    background: white;
+    border: 1.5px solid #d9cffb;
+    color: var(--purple);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 9px;
+    cursor: pointer;
+  }
+  .zoom-btn:hover { background: #f2effe; }
+  .zoom-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,20,30,0.82);
+    z-index: 1000;
+    padding: 30px 16px;
+    overflow-y: auto;
+  }
+  .zoom-overlay.open { display: block; }
+  .zoom-overlay-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .zoom-close-btn {
+    position: sticky;
+    top: 0;
+    float: right;
+    background: white;
+    border: none;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  }
+  .zoom-overlay-canvas {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    clear: both;
+  }
+
+  /* ---- Toast de confirmation ---- */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%) translateY(20px);
+    background: #1f2430;
+    color: white;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 1100;
+    max-width: 92vw;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+  .toast .toast-again-btn {
+    flex-shrink: 0;
+    background: var(--purple);
+    color: white;
+    border: none;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
   .field label {
     display: block;
     font-size: 12.5px;
@@ -680,26 +857,58 @@
     display: flex; justify-content: space-between; align-items: center;
   }
   .footer .fbrand { font-size: 14px; font-weight: 700; color: var(--t-footer-brand); }
-  .footer .fnote { font-size: 13px; color: var(--t-footer-note); }
+  /* En gras et dans la couleur d'accent du template pour guider l'œil
+     vers les boutons de contact juste en dessous. */
+  .footer .fnote { font-size: 13px; font-weight: 700; color: var(--t-accent); }
   .footer-contacts {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 8px;
+    gap: 12px;
+    padding-top: 2px;
   }
+  /* ---- Convention pour les icônes de contact ----
+     Tout nouveau réseau (Instagram, Discord, etc.) doit suivre le même
+     gabarit qu'ici : un cercle plein (fill = couleur de marque officielle)
+     contenant un glyphe blanc, rendu à 30x30px via .contact-icon, pour
+     rester visuellement homogène avec WhatsApp/Telegram. */
   .footer .contact-link {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
     font-size: 13px;
     font-weight: 600;
     color: var(--t-accent);
     text-decoration: none;
+    transition: opacity 0.15s, filter 0.15s;
+  }
+  .footer .contact-link:hover,
+  .footer .contact-link:focus-visible {
+    opacity: 0.75;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.18));
   }
   .footer .contact-link .contact-icon { flex-shrink: 0; }
 </style>
 </head>
 <body>
+
+  <div class="progress-steps" id="progress-steps">
+    <div class="progress-step done" data-step="template">
+      <div class="dot">1</div><div class="label">Modèle</div>
+    </div>
+    <div class="progress-line" data-line="1"></div>
+    <div class="progress-step" data-step="infos">
+      <div class="dot">2</div><div class="label">Infos</div>
+    </div>
+    <div class="progress-line" data-line="2"></div>
+    <div class="progress-step" data-step="contacts">
+      <div class="dot">3</div><div class="label">Contacts</div>
+    </div>
+    <div class="progress-line" data-line="3"></div>
+    <div class="progress-step" data-step="generation">
+      <div class="dot">4</div><div class="label">Génération</div>
+    </div>
+  </div>
 
   <div class="tool">
     <div class="eyebrow">Outil interne</div>
@@ -716,14 +925,16 @@
       <input type="text" id="shop-name" placeholder="Ex : INFORMATIQUE" />
     </div>
 
-    <div class="field">
+    <div class="field field-with-status">
       <label for="whatsapp-contact">Numéro WhatsApp (optionnel)</label>
-      <input type="text" id="whatsapp-contact" placeholder="Ex : +221 77 123 45 67 ou lien wa.me" />
+      <input type="text" id="whatsapp-contact" placeholder="Ex : +221 77 123 45 67 ou lien wa.me" autocomplete="off" />
+      <span class="field-status-icon" id="whatsapp-status" aria-live="polite"></span>
     </div>
 
-    <div class="field">
+    <div class="field field-with-status">
       <label for="telegram-contact">Identifiant Telegram (optionnel)</label>
-      <input type="text" id="telegram-contact" placeholder="Ex : @technicien ou lien t.me" />
+      <input type="text" id="telegram-contact" placeholder="Ex : @technicien ou lien t.me" autocomplete="off" />
+      <span class="field-status-icon" id="telegram-status" aria-live="polite"></span>
     </div>
 
     <div class="field">
@@ -739,6 +950,10 @@
       <label for="drive-link">Lien Google Drive</label>
       <input type="text" id="drive-link" placeholder="https://drive.google.com/file/d/..." />
       <div class="error" id="error-msg">Merci de coller un lien Google Drive valide.</div>
+      <div class="fallback-copy-row">
+        <span class="fallback-text" id="tool-fallback-text">Lien de secours dans le PDF : —</span>
+        <button type="button" class="copy-link-btn" id="copy-link-btn" onclick="copyFallbackLink()">📋 Copier le lien</button>
+      </div>
     </div>
 
     <button class="generate-btn" id="generate-btn" onclick="generatePdf()">⬇ Générer et télécharger le PDF</button>
@@ -752,7 +967,10 @@
   </div>
 
   <!-- Live preview, also used as the source for PDF export -->
-  <div class="preview-label">Aperçu — sera généré avec le lien ci-dessus</div>
+  <div class="preview-toolbar">
+    <div class="preview-label" style="margin:0;">Aperçu — sera généré avec le lien ci-dessus</div>
+    <button type="button" class="zoom-btn" id="zoom-btn" onclick="openZoom()">🔍 Plein écran</button>
+  </div>
   <div id="preview-wrap">
   <div id="preview-sizer">
   <div id="pdf-root" class="tpl-violet">
@@ -839,6 +1057,20 @@
     </div>
   </div>
   </div>
+  </div>
+
+  <!-- Overlay plein écran pour vérifier le rendu du PDF -->
+  <div class="zoom-overlay" id="zoom-overlay">
+    <div class="zoom-overlay-inner">
+      <button type="button" class="zoom-close-btn" onclick="closeZoom()">✕ Fermer</button>
+      <div class="zoom-overlay-canvas" id="zoom-overlay-canvas"></div>
+    </div>
+  </div>
+
+  <!-- Toast de confirmation après téléchargement -->
+  <div class="toast" id="toast">
+    <span id="toast-message">✅ PDF généré avec succès !</span>
+    <button type="button" class="toast-again-btn" id="toast-again-btn" onclick="resetForAnotherGuide()">Générer un autre guide</button>
   </div>
 
 <script>
@@ -967,6 +1199,7 @@ function selectTemplate(id) {
   pdfRoot.classList.add(id);
   renderTemplateGallery();
   scalePreviewToFit();
+  saveDraft();
 }
 
 function templateSlug() {
@@ -1002,6 +1235,10 @@ function updatePreview() {
   document.getElementById('brand-text').textContent = shopNameInput || 'FORMATIONS';
 
   updateFooterContacts();
+  updateFieldStatusIcons();
+  updateToolFallbackText(link, shown);
+  updateProgressSteps();
+  saveDraft();
 
   scalePreviewToFit();
 }
@@ -1055,6 +1292,198 @@ function updateFooterContacts() {
   const hasAnyContact = !!(waLink || tgLink);
   contactsWrap.style.display = hasAnyContact ? 'flex' : 'none';
   noteEl.style.display = hasAnyContact ? 'none' : 'block';
+}
+
+/* ---- Validation en temps réel des champs de contact ----
+   Un champ vide reste neutre (l'un et l'autre sont optionnels) ; un
+   champ rempli est marqué ✓ (vert) s'il produira un lien fonctionnel,
+   ✗ (rouge) sinon, pour éviter de découvrir un lien cassé une fois le
+   PDF généré. */
+function isWhatsappValid(raw) {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  if (/^https?:\/\//i.test(trimmed)) {
+    return /^https?:\/\/(www\.)?(wa\.me|api\.whatsapp\.com)\//i.test(trimmed);
+  }
+  const digits = trimmed.replace(/[^\d]/g, '');
+  return digits.length >= 8 && digits.length <= 15;
+}
+
+function isTelegramValid(raw) {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  if (/^https?:\/\//i.test(trimmed)) {
+    return /^https?:\/\/(www\.)?t\.me\//i.test(trimmed);
+  }
+  const username = trimmed.replace(/^@/, '');
+  return /^[a-zA-Z][a-zA-Z0-9_]{4,31}$/.test(username);
+}
+
+function setFieldStatus(iconEl, valid) {
+  iconEl.classList.remove('ok', 'bad');
+  if (valid === null) {
+    iconEl.textContent = '';
+    return;
+  }
+  if (valid) {
+    iconEl.textContent = '✓';
+    iconEl.classList.add('ok');
+  } else {
+    iconEl.textContent = '✗';
+    iconEl.classList.add('bad');
+  }
+}
+
+function updateFieldStatusIcons() {
+  const waRaw = document.getElementById('whatsapp-contact').value;
+  const tgRaw = document.getElementById('telegram-contact').value;
+  setFieldStatus(document.getElementById('whatsapp-status'), isWhatsappValid(waRaw));
+  setFieldStatus(document.getElementById('telegram-status'), isTelegramValid(tgRaw));
+}
+
+/* ---- Lien de secours copiable en un clic ---- */
+function updateToolFallbackText(link, shown) {
+  document.getElementById('tool-fallback-text').textContent = 'Lien de secours dans le PDF : ' + shown;
+}
+
+function copyFallbackLink() {
+  const link = document.getElementById('drive-link').value.trim();
+  if (!link) return;
+  const btn = document.getElementById('copy-link-btn');
+  const finish = () => {
+    btn.textContent = '✓ Copié !';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '📋 Copier le lien';
+      btn.classList.remove('copied');
+    }, 1800);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(link).then(finish).catch(finish);
+  } else {
+    const tmp = document.createElement('textarea');
+    tmp.value = link;
+    document.body.appendChild(tmp);
+    tmp.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(tmp);
+    finish();
+  }
+}
+
+/* ---- Indicateur de progression ----
+   "Modèle" est toujours acquis (un template est sélectionné par
+   défaut) ; "Infos" et "Contacts" reflètent le remplissage réel des
+   champs ; "Génération" ne s'allume qu'après un téléchargement réussi. */
+let generationDone = false;
+
+function updateProgressSteps() {
+  const titleFilled = document.getElementById('formation-title').value.trim().length > 0;
+  const shopFilled = document.getElementById('shop-name').value.trim().length > 0;
+  const infosDone = titleFilled || shopFilled;
+
+  const waRaw = document.getElementById('whatsapp-contact').value;
+  const tgRaw = document.getElementById('telegram-contact').value;
+  const contactsDone = isWhatsappValid(waRaw) === true || isTelegramValid(tgRaw) === true;
+
+  const steps = document.querySelectorAll('#progress-steps .progress-step');
+  const lines = document.querySelectorAll('#progress-steps .progress-line');
+  const state = { template: true, infos: infosDone, contacts: contactsDone, generation: generationDone };
+
+  steps.forEach(el => {
+    const key = el.getAttribute('data-step');
+    el.classList.toggle('done', !!state[key]);
+  });
+  lines[0].classList.toggle('done', state.infos);
+  lines[1].classList.toggle('done', state.contacts);
+  lines[2].classList.toggle('done', state.generation);
+}
+
+/* ---- Sauvegarde automatique du brouillon (côté navigateur) ----
+   Évite de tout perdre en cas de rafraîchissement accidentel de la
+   page. Ne stocke que le texte des champs et le modèle choisi — pas
+   le logo (trop volumineux pour du texte, et régénérable en un clic). */
+const DRAFT_KEY = 'guideGeneratorDraft';
+
+function saveDraft() {
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({
+      title: document.getElementById('formation-title').value,
+      shopName: document.getElementById('shop-name').value,
+      whatsapp: document.getElementById('whatsapp-contact').value,
+      telegram: document.getElementById('telegram-contact').value,
+      driveLink: document.getElementById('drive-link').value,
+      template: currentTemplate
+    }));
+  } catch (e) { /* stockage indisponible (navigation privée...) : on ignore */ }
+}
+
+function loadDraft() {
+  let draft;
+  try {
+    draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+  } catch (e) { return; }
+  if (!draft) return;
+  document.getElementById('formation-title').value = draft.title || '';
+  document.getElementById('shop-name').value = draft.shopName || '';
+  document.getElementById('whatsapp-contact').value = draft.whatsapp || '';
+  document.getElementById('telegram-contact').value = draft.telegram || '';
+  document.getElementById('drive-link').value = draft.driveLink || '';
+  if (draft.template && TEMPLATES.some(t => t.id === draft.template)) {
+    currentTemplate = draft.template;
+    const pdfRoot = document.getElementById('pdf-root');
+    TEMPLATES.forEach(t => pdfRoot.classList.remove(t.id));
+    pdfRoot.classList.add(currentTemplate);
+  }
+}
+
+/* ---- Aperçu plein écran ---- */
+function openZoom() {
+  const canvas = document.getElementById('zoom-overlay-canvas');
+  const root = document.getElementById('pdf-root');
+  const clone = root.cloneNode(true);
+  clone.id = '';
+  clone.className = root.className;
+  clone.style.transform = 'none';
+  clone.style.position = 'static';
+  clone.style.top = 'auto';
+  clone.style.left = 'auto';
+  clone.style.width = '100%';
+  clone.style.maxWidth = '900px';
+  canvas.innerHTML = '';
+  canvas.appendChild(clone);
+  document.getElementById('zoom-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeZoom() {
+  document.getElementById('zoom-overlay').classList.remove('open');
+  document.getElementById('zoom-overlay-canvas').innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+/* ---- Toast de confirmation + réinitialisation ---- */
+let toastTimeout = null;
+
+function showToast(message, showAgainBtn) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-message').textContent = message;
+  document.getElementById('toast-again-btn').style.display = showAgainBtn ? 'inline-block' : 'none';
+  toast.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 6000);
+}
+
+function resetForAnotherGuide() {
+  document.getElementById('toast').classList.remove('show');
+  document.getElementById('drive-link').value = '';
+  document.getElementById('error-msg').style.display = 'none';
+  document.getElementById('drive-link').style.borderColor = '#d9cffb';
+  document.getElementById('status').textContent = '';
+  generationDone = false;
+  updatePreview();
+  document.getElementById('drive-link').focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function handleLogoUpload(event) {
@@ -1208,6 +1637,12 @@ async function generatePdf() {
     status.textContent = offlineMode
       ? '✓ PDF téléchargé (mode hors-ligne, polices système utilisées).'
       : '✓ PDF téléchargé avec succès.';
+    generationDone = true;
+    updateProgressSteps();
+    showToast(
+      offlineMode ? '✅ PDF généré (mode hors-ligne) !' : '✅ PDF généré avec succès !',
+      true
+    );
   } catch (err) {
     console.error(err);
     status.textContent = describePdfError(err, { offlineMode, logoBroken });
@@ -1269,9 +1704,20 @@ const previewResizeObserver = new ResizeObserver(() => scalePreviewToFit());
 const pdfRootEl = document.getElementById('pdf-root');
 if (pdfRootEl) previewResizeObserver.observe(pdfRootEl);
 
+loadDraft();
 renderTemplateGallery();
 updatePreview();
 scalePreviewToFit();
+
+// Close the fullscreen preview on Escape, and clicking its dark backdrop
+document.getElementById('zoom-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeZoom();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && document.getElementById('zoom-overlay').classList.contains('open')) {
+    closeZoom();
+  }
+});
 </script>
 
 </body>
