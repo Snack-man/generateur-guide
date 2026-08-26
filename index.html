@@ -1438,12 +1438,16 @@ function loadDraft() {
 }
 
 /* ---- Aperçu plein écran ---- */
+// Le rendu (couleurs, mise en page, variante de template) dépend
+// entièrement des règles CSS "#pdf-root" / "#pdf-root.tpl-xxx" : le
+// clone doit donc garder cet id (comme le fait déjà la génération du
+// PDF) pour s'afficher correctement — un id vide ou différent le
+// laisse sans styles, d'où une page blanche au texte en vrac.
 function openZoom() {
   const canvas = document.getElementById('zoom-overlay-canvas');
   const root = document.getElementById('pdf-root');
   const clone = root.cloneNode(true);
-  clone.id = '';
-  clone.className = root.className;
+  clone.id = 'pdf-root';
   clone.style.transform = 'none';
   clone.style.position = 'static';
   clone.style.top = 'auto';
@@ -1548,6 +1552,47 @@ function describePdfError(err, context) {
   return 'Une erreur est survenue, réessayez.';
 }
 
+/* ---- Téléchargement du PDF, fiable sur mobile ----
+   La méthode .save() de html2pdf/jsPDF est peu fiable sur téléphone :
+   Safari iOS ignore souvent l'attribut "download" sur les URL blob et
+   se contente d'ouvrir (ou de bloquer) la page au lieu de proposer un
+   fichier .pdf ; certains navigateurs Android en app intégrée ont le
+   même souci. On récupère donc le PDF sous forme de Blob nous-mêmes
+   et on choisit la méthode de récupération adaptée à la plateforme. */
+function isIOSDevice() {
+  return /iP(hone|od|ad)/.test(navigator.userAgent) ||
+    // iPadOS se présente comme "MacIntel" mais reste tactile
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function downloadPdfBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  if (isIOSDevice()) {
+    // Sur iOS, ouvrir le blob dans un nouvel onglet affiche le PDF
+    // dans la visionneuse native de Safari : l'utilisateur peut alors
+    // utiliser le bouton natif "Partager" pour l'enregistrer dans
+    // Fichiers — bien plus fiable qu'un déclenchement de téléchargement.
+    const opened = window.open(url, '_blank');
+    if (!opened) {
+      // Fenêtre bloquée par le navigateur : on retente un lien classique.
+      triggerAnchorDownload(url, filename);
+    }
+  } else {
+    triggerAnchorDownload(url, filename);
+  }
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+function triggerAnchorDownload(url, filename) {
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.rel = 'noopener';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 async function generatePdf() {
   const input = document.getElementById('drive-link');
   const errorMsg = document.getElementById('error-msg');
@@ -1633,10 +1678,14 @@ async function generatePdf() {
   };
 
   try {
-    await html2pdf().set(opt).from(clone).save();
-    status.textContent = offlineMode
-      ? '✓ PDF téléchargé (mode hors-ligne, polices système utilisées).'
-      : '✓ PDF téléchargé avec succès.';
+    const pdfBlob = await html2pdf().set(opt).from(clone).outputPdf('blob');
+    downloadPdfBlob(pdfBlob, opt.filename);
+    const iosNote = isIOSDevice()
+      ? ' Le PDF s\'ouvre dans un nouvel onglet : utilisez le bouton « Partager » de Safari pour l\'enregistrer dans Fichiers.'
+      : '';
+    status.textContent = (offlineMode
+      ? '✓ PDF généré (mode hors-ligne, polices système utilisées).'
+      : '✓ PDF généré avec succès.') + iosNote;
     generationDone = true;
     updateProgressSteps();
     showToast(
