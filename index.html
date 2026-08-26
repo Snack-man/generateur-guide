@@ -681,6 +681,22 @@
   }
   .footer .fbrand { font-size: 14px; font-weight: 700; color: var(--t-footer-brand); }
   .footer .fnote { font-size: 13px; color: var(--t-footer-note); }
+  .footer-contacts {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .footer .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--t-accent);
+    text-decoration: none;
+  }
+  .footer .contact-link .contact-icon { flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -701,8 +717,13 @@
     </div>
 
     <div class="field">
-      <label for="shop-contact">Contact (affiché en bas du guide)</label>
-      <input type="text" id="shop-contact" placeholder="Ex : Contactez-nous via Telegram : t.me/technicien" />
+      <label for="whatsapp-contact">Numéro WhatsApp (optionnel)</label>
+      <input type="text" id="whatsapp-contact" placeholder="Ex : +221 77 123 45 67 ou lien wa.me" />
+    </div>
+
+    <div class="field">
+      <label for="telegram-contact">Identifiant Telegram (optionnel)</label>
+      <input type="text" id="telegram-contact" placeholder="Ex : @technicien ou lien t.me" />
     </div>
 
     <div class="field">
@@ -758,8 +779,8 @@
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-body">
-          <div class="step-title">Faites défiler ce document</div>
-          <div class="step-desc">Descendez jusqu'en bas de ce guide pour trouver le lien de téléchargement.</div>
+          <div class="step-title">Accédez à votre formation</div>
+          <div class="step-desc">Cliquez sur le bouton « Cliquez ici pour télécharger » ci-dessous pour ouvrir le fichier sur Google Drive.</div>
         </div>
       </div>
       <div class="step-line"></div>
@@ -767,26 +788,8 @@
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-body">
-          <div class="step-title">Copiez le lien Google Drive</div>
-          <div class="step-desc">Le lien se trouve tout en bas de ce document, dans l'encadré prévu à cet effet.</div>
-        </div>
-      </div>
-      <div class="step-line"></div>
-
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <div class="step-title">Collez le lien dans votre navigateur</div>
-          <div class="step-desc">Ouvrez votre navigateur, collez le lien, puis appuyez sur Entrée.</div>
-        </div>
-      </div>
-      <div class="step-line"></div>
-
-      <div class="step">
-        <div class="step-num">4</div>
-        <div class="step-body">
-          <div class="step-title">Ignorez le message d'aperçu</div>
-          <div class="step-desc">Si Google Drive affiche « Impossible de prévisualiser le fichier », c'est normal — voici à quoi ressemble l'écran :</div>
+          <div class="step-title">Ignorez l'aperçu si nécessaire</div>
+          <div class="step-desc">Si Google Drive affiche « Impossible de prévisualiser le fichier », pas d'inquiétude. Cela signifie simplement que le fichier est trop volumineux pour être prévisualisé.</div>
         </div>
       </div>
 
@@ -802,16 +805,16 @@
       </div>
 
       <div class="step" style="margin-top:6px;">
-        <div class="step-num">5</div>
+        <div class="step-num">3</div>
         <div class="step-body">
-          <div class="step-title">Cliquez sur « Télécharger »</div>
-          <div class="step-desc">Le téléchargement de votre formation démarre automatiquement.</div>
+          <div class="step-title">Téléchargez votre formation</div>
+          <div class="step-desc">Cliquez sur « Télécharger » pour enregistrer la formation sur votre appareil.</div>
         </div>
       </div>
 
       <div class="reco">
         <div class="icon">💻</div>
-        <div class="txt"><b>Recommandation :</b> Pour une meilleure expérience, téléchargez votre formation sur un ordinateur plutôt que sur mobile.</div>
+        <div class="txt"><b>Recommandation :</b> Pour une meilleure expérience, nous vous conseillons de télécharger votre formation sur un ordinateur plutôt que sur un téléphone.</div>
       </div>
 
       <div class="link-card">
@@ -823,6 +826,16 @@
 
     <div class="footer">
       <div class="fnote" id="footer-note">Besoin d'aide ? Contactez-nous via Telegram.</div>
+      <div class="footer-contacts" id="footer-contacts" style="display:none;">
+        <a class="contact-link" id="whatsapp-link" href="#" target="_blank" rel="noopener" style="display:none;">
+          <svg class="contact-icon" viewBox="0 0 32 32" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M16.004 3C9.377 3 4 8.377 4 15.004c0 2.385.63 4.65 1.828 6.638L4 29l7.53-1.977a11.96 11.96 0 0 0 4.474.86h.005c6.627 0 12.004-5.377 12.004-12.004C28.013 8.377 22.636 3 16.004 3zm0 21.86h-.004a9.83 9.83 0 0 1-5.01-1.373l-.359-.213-4.469 1.173 1.193-4.355-.234-.447a9.822 9.822 0 0 1-1.505-5.24c0-5.436 4.425-9.86 9.868-9.86 2.635 0 5.113 1.028 6.978 2.895a9.796 9.796 0 0 1 2.888 6.973c0 5.436-4.425 9.447-9.346 9.447zm5.406-7.36c-.296-.148-1.752-.865-2.024-.964-.271-.099-.469-.148-.667.148-.198.297-.766.964-.94 1.162-.173.198-.346.222-.642.074-.296-.148-1.25-.461-2.382-1.47-.88-.786-1.475-1.757-1.648-2.053-.173-.297-.019-.457.13-.604.133-.132.296-.346.444-.52.148-.173.198-.297.296-.495.099-.198.05-.371-.025-.52-.074-.148-.667-1.61-.914-2.204-.24-.578-.485-.5-.667-.51l-.568-.01c-.198 0-.52.074-.792.371-.271.297-1.04 1.017-1.04 2.48 0 1.462 1.065 2.876 1.213 3.074.148.198 2.096 3.2 5.078 4.487.71.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.752-.716 1.999-1.407.247-.692.247-1.284.173-1.408-.074-.123-.271-.198-.568-.346z"/></svg>
+          <span>Cliquez ici pour nous contacter sur WhatsApp</span>
+        </a>
+        <a class="contact-link" id="telegram-link" href="#" target="_blank" rel="noopener" style="display:none;">
+          <svg class="contact-icon" viewBox="0 0 240 240" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M120 0C53.7 0 0 53.7 0 120s53.7 120 120 120 120-53.7 120-120S186.3 0 120 0zM175.6 82.1l-19.9 93.8c-1.5 6.7-5.4 8.3-11 5.2l-30.4-22.4-14.7 14.1c-1.6 1.6-3 3-6.1 3l2.2-30.9 56.3-50.9c2.4-2.2-.5-3.4-3.8-1.2L86.3 138.4l-30.2-9.4c-6.6-2-6.7-6.6 1.4-9.8l117.9-45.5c5.5-2 10.3 1.3 8.6 8.4z"/></svg>
+          <span>Cliquez ici pour nous contacter sur Telegram</span>
+        </a>
+      </div>
     </div>
   </div>
   </div>
@@ -988,10 +1001,60 @@ function updatePreview() {
   const shopNameInput = document.getElementById('shop-name').value.trim();
   document.getElementById('brand-text').textContent = shopNameInput || 'FORMATIONS';
 
-  const shopContactInput = document.getElementById('shop-contact').value.trim();
-  document.getElementById('footer-note').textContent = shopContactInput || "Besoin d'aide ? Contactez-nous via Telegram.";
+  updateFooterContacts();
 
   scalePreviewToFit();
+}
+
+// Turns a raw phone number or wa.me link into a valid https://wa.me/... URL
+function buildWhatsappLink(raw) {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  const digits = trimmed.replace(/[^\d]/g, '');
+  if (!digits) return null;
+  return 'https://wa.me/' + digits;
+}
+
+// Turns a raw @username, plain username, or t.me link into a valid
+// https://t.me/... URL
+function buildTelegramLink(raw) {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  const username = trimmed.replace(/^@/, '');
+  if (!username) return null;
+  return 'https://t.me/' + username;
+}
+
+function updateFooterContacts() {
+  const waRaw = document.getElementById('whatsapp-contact').value;
+  const tgRaw = document.getElementById('telegram-contact').value;
+  const waLink = buildWhatsappLink(waRaw);
+  const tgLink = buildTelegramLink(tgRaw);
+
+  const waEl = document.getElementById('whatsapp-link');
+  const tgEl = document.getElementById('telegram-link');
+  const contactsWrap = document.getElementById('footer-contacts');
+  const noteEl = document.getElementById('footer-note');
+
+  if (waLink) {
+    waEl.setAttribute('href', waLink);
+    waEl.style.display = 'inline-flex';
+  } else {
+    waEl.style.display = 'none';
+  }
+
+  if (tgLink) {
+    tgEl.setAttribute('href', tgLink);
+    tgEl.style.display = 'inline-flex';
+  } else {
+    tgEl.style.display = 'none';
+  }
+
+  const hasAnyContact = !!(waLink || tgLink);
+  contactsWrap.style.display = hasAnyContact ? 'flex' : 'none';
+  noteEl.style.display = hasAnyContact ? 'none' : 'block';
 }
 
 function handleLogoUpload(event) {
@@ -1026,7 +1089,8 @@ function removeLogo() {
 document.getElementById('logo-upload').addEventListener('change', handleLogoUpload);
 document.getElementById('formation-title').addEventListener('input', updatePreview);
 document.getElementById('shop-name').addEventListener('input', updatePreview);
-document.getElementById('shop-contact').addEventListener('input', updatePreview);
+document.getElementById('whatsapp-contact').addEventListener('input', updatePreview);
+document.getElementById('telegram-contact').addEventListener('input', updatePreview);
 
 // Traduit une erreur de génération PDF en message compréhensible,
 // plutôt que le générique "Une erreur est survenue" d'origine.
