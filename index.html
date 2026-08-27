@@ -958,6 +958,7 @@
 
     <button class="generate-btn" id="generate-btn" onclick="generatePdf()">⬇ Générer et télécharger le PDF</button>
     <div class="status" id="status"></div>
+    <button type="button" class="copy-link-btn" id="pdf-fallback-open-btn" style="display:none; margin: 10px auto 0 auto; width:100%;" onclick="openLastPdfInNewTab()">📄 Le fichier ne s'est pas téléchargé ? Ouvrir le PDF</button>
   </div>
 
   <!-- Template picker -->
@@ -1484,6 +1485,7 @@ function resetForAnotherGuide() {
   document.getElementById('error-msg').style.display = 'none';
   document.getElementById('drive-link').style.borderColor = '#d9cffb';
   document.getElementById('status').textContent = '';
+  document.getElementById('pdf-fallback-open-btn').style.display = 'none';
   generationDone = false;
   updatePreview();
   document.getElementById('drive-link').focus();
@@ -1559,28 +1561,38 @@ function describePdfError(err, context) {
    fichier .pdf ; certains navigateurs Android en app intégrée ont le
    même souci. On récupère donc le PDF sous forme de Blob nous-mêmes
    et on choisit la méthode de récupération adaptée à la plateforme. */
+// Garde en mémoire le dernier PDF généré pour permettre un plan B
+// en un tap si le téléchargement automatique ne s'est pas déclenché
+// (Safari iOS ne le garantit pas toujours).
 function isIOSDevice() {
   return /iP(hone|od|ad)/.test(navigator.userAgent) ||
     // iPadOS se présente comme "MacIntel" mais reste tactile
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
+let lastPdfUrl = null;
+let lastPdfRevokeTimer = null;
+
 function downloadPdfBlob(blob, filename) {
+  if (lastPdfUrl) URL.revokeObjectURL(lastPdfUrl);
   const url = URL.createObjectURL(blob);
-  if (isIOSDevice()) {
-    // Sur iOS, ouvrir le blob dans un nouvel onglet affiche le PDF
-    // dans la visionneuse native de Safari : l'utilisateur peut alors
-    // utiliser le bouton natif "Partager" pour l'enregistrer dans
-    // Fichiers — bien plus fiable qu'un déclenchement de téléchargement.
-    const opened = window.open(url, '_blank');
-    if (!opened) {
-      // Fenêtre bloquée par le navigateur : on retente un lien classique.
-      triggerAnchorDownload(url, filename);
-    }
-  } else {
-    triggerAnchorDownload(url, filename);
-  }
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  lastPdfUrl = url;
+
+  // On tente d'abord un téléchargement direct sur toutes les
+  // plateformes : sur la plupart des iPhone récents (iOS 13+), un
+  // lien <a download="nom.pdf"> vers un blob déclenche bien un
+  // téléchargement natif dans Fichiers > Téléchargements, avec le bon
+  // nom et la bonne extension, sans passer par la fenêtre "Partager".
+  triggerAnchorDownload(url, filename);
+
+  // On garde l'URL utilisable plus longtemps (5 min) pour le bouton
+  // de secours ci-dessous, au cas où le téléchargement automatique
+  // n'aurait pas fonctionné sur cet appareil.
+  clearTimeout(lastPdfRevokeTimer);
+  lastPdfRevokeTimer = setTimeout(() => {
+    URL.revokeObjectURL(url);
+    if (lastPdfUrl === url) lastPdfUrl = null;
+  }, 300000);
 }
 
 function triggerAnchorDownload(url, filename) {
@@ -1591,6 +1603,16 @@ function triggerAnchorDownload(url, filename) {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+// Plan B pour iPhone : ouvre le PDF déjà généré dans un nouvel onglet
+// si le téléchargement automatique n'a rien donné, sans régénérer le
+// PDF. Le titre interne du PDF (déjà défini avant l'export) aide
+// Safari à proposer un nom correct, extension comprise, si
+// l'utilisateur utilise ensuite "Partager > Enregistrer dans Fichiers".
+function openLastPdfInNewTab() {
+  if (!lastPdfUrl) return;
+  window.open(lastPdfUrl, '_blank');
 }
 
 async function generatePdf() {
@@ -1611,6 +1633,7 @@ async function generatePdf() {
 
   btn.disabled = true;
   status.textContent = 'Génération du PDF en cours...';
+  document.getElementById('pdf-fallback-open-btn').style.display = 'none';
 
   // Let the DOM repaint before capture
   await new Promise(resolve => setTimeout(resolve, 50));
@@ -1678,14 +1701,26 @@ async function generatePdf() {
   };
 
   try {
-    const pdfBlob = await html2pdf().set(opt).from(clone).outputPdf('blob');
+    // On récupère l'instance jsPDF directement (plutôt que
+    // .outputPdf('blob') seul) pour pouvoir y inscrire un titre
+    // interne avant export : Safari iOS s'en sert souvent pour
+    // suggérer un nom de fichier dans la boîte de dialogue
+    // "Enregistrer dans Fichiers", au lieu d'un nom générique sans
+    // extension.
+    const pdfDocTitle = opt.filename.replace(/\.pdf$/i, '');
+    const pdf = await html2pdf().set(opt).from(clone).toPdf().get('pdf');
+    pdf.setProperties({ title: pdfDocTitle });
+    const pdfBlob = pdf.output('blob');
     downloadPdfBlob(pdfBlob, opt.filename);
     const iosNote = isIOSDevice()
-      ? ' Le PDF s\'ouvre dans un nouvel onglet : utilisez le bouton « Partager » de Safari pour l\'enregistrer dans Fichiers.'
+      ? ' Vérifiez vos téléchargements ; si rien ne s\'est passé, utilisez le bouton ci-dessous.'
       : '';
     status.textContent = (offlineMode
       ? '✓ PDF généré (mode hors-ligne, polices système utilisées).'
       : '✓ PDF généré avec succès.') + iosNote;
+    if (isIOSDevice()) {
+      document.getElementById('pdf-fallback-open-btn').style.display = 'block';
+    }
     generationDone = true;
     updateProgressSteps();
     showToast(
